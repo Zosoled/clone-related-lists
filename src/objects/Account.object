@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <webLinks>
+        <fullName>CopyChildrenFromARecord</fullName>
+        <availability>online</availability>
+        <displayType>button</displayType>
+        <encodingKey>UTF-8</encodingKey>
+        <linkType>javascript</linkType>
+        <masterLabel>Copy Children From A Record</masterLabel>
+        <openType>onClickJavaScript</openType>
+        <protected>false</protected>
+        <url>
+{!REQUIRESCRIPT("/soap/ajax/35.0/connection.js")}
+{!REQUIRESCRIPT("/soap/ajax/35.0/apex.js")}
+
+var destinationId = &apos;{!Account.Id}&apos;;
+var q = &quot;SELECT Id FROM Account WHERE Id &lt; &quot; + destinationId + &quot; ORDER BY Id DESC NULLS LAST LIMIT 1&quot;;
+var result = sforce.connection.query(q);
+
+var records = result.getArray(&quot;records&quot;);
+if(records.length == 0) {
+    alert(&apos;No previous records were found.&apos;);
+} else {
+
+    var sourceId = records[0].Id;
+    sourceId = sourceId.slice(0,15);
+    var apex = &apos;{!URLFOR(&quot;/apex/CloneListPage&quot;)}&apos;;
+    var pv0  = &quot;?sourceId=&quot; + sourceId;
+    var pv1  = &quot;&amp;destinationId=&quot; + destinationId;
+    var ret  = &quot;&amp;retURL=&quot; + destinationId;
+
+    var url  = apex + pv0 + pv1 + ret;
+    window.location.assign(url);
+}
+        </url>
+    </webLinks>
+    <webLinks>
+        <fullName>CopyChildrenToARecord</fullName>
+        <availability>online</availability>
+        <displayType>button</displayType>
+        <encodingKey>UTF-8</encodingKey>
+        <linkType>javascript</linkType>
+        <masterLabel>Copy Children To A Record</masterLabel>
+        <openType>onClickJavaScript</openType>
+        <protected>false</protected>
+        <url>
+{!REQUIRESCRIPT(&quot;/soap/ajax/35.0/connection.js&quot;)}
+{!REQUIRESCRIPT(&quot;/soap/ajax/35.0/apex.js&quot;)}
+
+var sourceId = &apos;{!Account.Id}&apos;;
+var q = &quot;SELECT Id FROM Account WHERE Id &gt; &quot; + sourceId + &quot; ORDER BY Id ASC NULLS LAST LIMIT 1&quot;;
+var result = sforce.connection.query(q);
+
+var records = result.getArray(&quot;records&quot;);
+if(records.length == 0) {
+    alert(&apos;No subsequent records were found.&apos;);
+} else {
+
+    var destinationId = records[0].Id;
+    destinationId = sourceId.slice(0,15);
+    var apex = &apos;{!URLFOR(&quot;/apex/CloneListPage&quot;)}&apos;;
+    var pv0  = &quot;?sourceId=&quot; + sourceId;
+    var pv1  = &quot;&amp;destinationId=&quot; + destinationId;
+    var ret  = &quot;&amp;retURL=&quot; + destinationId;
+
+    var url  = apex + pv0 + pv1 + ret;
+    window.location.assign(url);
+}
+        </url>
+    </webLinks>
+</CustomObject>
